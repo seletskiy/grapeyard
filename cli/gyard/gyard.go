@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/docopt/docopt.go"
-	"grapeyard/installer"
 )
 
 const (
@@ -25,10 +24,7 @@ Options:
 	args, _ := docopt.Parse(usage, nil, true, VERSION, false)
 
 	if args["rape"].(bool) {
-		fmt.Println("rapeme!1")
-		fmt.Println("installing ntp")
-		installer.Install("ntp")
-		fmt.Println("installation finished")
+		fmt.Println("action: rape")
 		return
 	}
 
