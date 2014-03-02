@@ -101,7 +101,7 @@ Options:
 
 	if args["conf-test"].(bool) {
 		fmt.Println("action: conf-test")
-		yard := yard.Yard{"localhost", 80}
+		yard := yard.Yard{"localhost", 80, []string{"nginx", "ntp"}}
 		err := configurer.Configure(
 			yard,
 			"test/configurer/template.conf",
@@ -136,4 +136,13 @@ func readNodesCache(path string) []string {
 	}
 
 	return nodesList
+}
+
+func getYard(path string) yard.Yard {
+	var y yard.Yard
+	err := yard.GetYard(&y, path)
+	if err != nil {
+		fmt.Println("err", err)
+	}
+	return y
 }

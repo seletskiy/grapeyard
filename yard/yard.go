@@ -6,7 +6,8 @@ import (
 
 type Yard struct {
 	Hostname string
-	Port int
+	Port     int
+	Runlist  []string
 }
 
 func GetYard(yard *Yard, path string) error {
