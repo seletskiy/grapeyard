@@ -17,4 +17,6 @@ func (n *Nginx) Ensure(cfg map[string]string) error {
 	if err := c.Ensure(cfg); err != nil {
 		log.Println("nginx config error: " + err.Error())
 	}
+
+	return nil
 }
