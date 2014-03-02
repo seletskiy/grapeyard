@@ -1,17 +1,21 @@
 package main
 
 import (
+    "archive/tar"
     "flag"
     "fmt"
+    "io"
     "io/ioutil"
     "os"
     "path/filepath"
+    "strconv"
 
     "github.com/mechmind/git-go/git"
     "github.com/seletskiy/grapeyard/builder"
 )
 
 const BASE_URL = "github.com/seletskiy/grapeyard"
+const MAIN_EXE = "cli/gyard"
 
 // functionality:
 // * detect commit in post-commit hook
@@ -64,19 +68,95 @@ func deployCurrentBranch() error {
     }
 
     err = builder.WriteRegistry(registry, buildDir, BASE_URL)
-    // TODO: build executable
+    // FIXME: build executable
 
+    sourceBinary := filepath.Join(tempDir, "bin", filepath.Base(MAIN_EXE))
+
+    // FIXME 222!!!! REMOVE IT !!!!
+    f, _ := os.Create(sourceBinary)
+    f.Close()
+    // REMOVE IT !!!
+    stat, err := os.Stat(sourceBinary)
+    if err != nil {
+        return err
+    }
+
+    exeLength := stat.Size()
+    seedName := filepath.Base(MAIN_EXE) + "." + strconv.Itoa(int(exeLength))
+    seedPath := filepath.Join(tempDir, seedName)
+
+    seedFile, err := os.Create(seedPath)
+    if err != nil {
+        return err
+    }
+
+    sourceFile, err := os.Open(sourceBinary)
+    if err != nil {
+        return err
+    }
+
+    io.Copy(seedFile, sourceFile)
 
     // build tar
     // strip go sources from user/ dir
 
-    userDir := filepath.Join(buildDir, "user")
+    userDir := filepath.Join(buildDir, "user", "")
     err = builder.StripSources(userDir)
     if err != nil {
         return err
     }
 
-    // build seed
+    // append tarred data
+    tarWriter := tar.NewWriter(seedFile)
+
+    var dirs = []string{userDir}
+
+    for {
+        if len(dirs) == 0 {
+            break
+        }
+
+        var newDirs []string
+
+        for _, dir := range dirs {
+            files, err := ioutil.ReadDir(filepath.Join(userDir, dir))
+            if err != nil {
+                return err
+            }
+            for _, file := range files {
+                fullPath := filepath.Join(dir, file.Name())
+                if file.IsDir() {
+                    newDirs = append(newDirs, fullPath)
+                } else {
+                    tarHeader, err := tar.FileInfoHeader(file, "")
+                    if err != nil {
+                        return err
+                    }
+
+                    tarHeader.Name = filepath.Join(dir, tarHeader.Name)
+
+                    err = tarWriter.WriteHeader(tarHeader)
+                    if err != nil {
+                        return err
+                    }
+
+                    sourceFile, err := os.Open(fullPath)
+                    if err != nil {
+                        return err
+                    }
+
+                    _, err = io.Copy(tarWriter, sourceFile)
+                    if err != nil {
+                        return err
+                    }
+
+                    sourceFile.Close()
+                }
+            }
+        }
+        dirs = newDirs
+    }
+
     return nil
 }
 
