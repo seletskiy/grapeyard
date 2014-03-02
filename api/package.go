@@ -5,7 +5,7 @@ import (
 	"os/exec"
 )
 
-type Package string
+type Package struct {}
 
 func (p *Package) Ensure(cfg map[string]string) error {
 	pkg := cfg["package"]
