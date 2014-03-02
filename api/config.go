@@ -2,6 +2,7 @@ package api
 
 import (
 	"os"
+	"log"
 	"text/template"
 )
 
