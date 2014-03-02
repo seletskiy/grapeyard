@@ -10,6 +10,7 @@ http {
 		listen {{.Port}};
 
 		location / {
+            root /etc/nginx;
 			index index.html;
 		}
 	}

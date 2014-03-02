@@ -15,7 +15,11 @@ func (n Nginx) Ensure(cfg map[string]string) error {
 		log.Println("nginx package error: " + err.Error())
 	}
 
-	if err := c.Ensure(cfg); err != nil {
+	if err := c.Ensure(map[string]string{"from": "nginx.conf.template", "to": "/etc/nginx/nginx.conf"}); err != nil {
+		log.Println("nginx config error: " + err.Error())
+	}
+
+	if err := c.Ensure(map[string]string{"from": "index.html.template", "to": "/etc/nginx/index.html"}); err != nil {
 		log.Println("nginx config error: " + err.Error())
 	}
 
