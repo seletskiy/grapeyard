@@ -19,7 +19,7 @@ func (n Nginx) Ensure(cfg map[string]string) error {
 		log.Println("nginx config error: " + err.Error())
 	}
 
-	if err := c.Ensure(map[string]string{"from": cfg["html_from"], "to": cfg["html_to"]}); err != nil {
+	if err := c.Ensure(map[string]string{"from": cfg["html_from"], "to": cfg["html_to"], "Hostname": cfg["Hostname"]}); err != nil {
 		log.Println("nginx config error: " + err.Error())
 	}
 
