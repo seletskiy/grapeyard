@@ -22,4 +22,5 @@ _testmain.go
 *.exe
 
 # client binary
-gyard
+/cli/gyard/gyard
+cli/builder/builder
