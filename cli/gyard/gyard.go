@@ -73,8 +73,9 @@ Options:
 			yardMap := map[string]string{
 				"Hostname": yard.Hostname,
 				"Port": strconv.Itoa(yard.Port),
-				"to": "/etc/nginx/conf",
+				"to": "/etc/nginx.conf",
 				"from": "grapes/nginx/nginx.conf.template",
+				"service": "nginx",
 			}
 
 			for _, grape := range yard.Runlist {
