@@ -1,8 +1,4 @@
-package nginx
-
-import (
-	"github.com/seletskiy/grapeyard/api"
-)
+package api
 
 func (p *Config) Ensure(cfg map[string]string) error {
 	p := new(api.Package)
