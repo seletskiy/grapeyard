@@ -1,6 +1,9 @@
 package iface
 
+import (
+    "github.com/seletskiy/grapeyard/yard"
+)
 
 type Ensurer interface {
-    Ensure(map[string]string) error
+    Ensure(yard.Yard, map[string]string) error
 }

@@ -8,8 +8,8 @@ import (
 
 type Package struct {}
 
-func (p *Package) Ensure(cfg map[string]string) error {
-	return nil
+func (p *Package) Ensure(y yard.Yard, cfg map[string]string) error {
+    return configure(y, cfg["from"], cfg["to"])
 }
 
 func configure(yard yard.Yard, tplPath string, confPath string) error {

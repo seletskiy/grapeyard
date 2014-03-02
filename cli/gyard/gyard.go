@@ -8,6 +8,7 @@ import (
 	"github.com/seletskiy/grapeyard/lib/gossip"
 	"github.com/seletskiy/grapeyard/lib/httpapi"
 	"github.com/seletskiy/grapeyard/yard"
+	"github.com/seletskiy/grapeyard/registry"
 	"os"
 	"strconv"
 	"time"
@@ -67,8 +68,8 @@ Options:
 		if !args["-p"].(bool) {
 			yard := getYard(args["-c"].(string))
 			for _, grape := range yard.Runlist {
-				// @TODO
-				panic("apply grape here! " + grape)
+				// @TODO config
+				registry.Registry[grape]()(yard, map[string]string{})
 			}
 
 			return
