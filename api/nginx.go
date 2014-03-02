@@ -1,8 +1,8 @@
 package api
 
 func (p *Config) Ensure(cfg map[string]string) error {
-	p := new(api.Package)
-	c := new(api.Config)
+	p := new(Package)
+	c := new(Config)
 	
 	if err := p.Ensure(map[string]string{"package": "nginx"}); err != nil {
 		log.Println("nginx package error: " + err.Error())
