@@ -72,6 +72,7 @@ Options:
             println("got yard")
 			yardMap := map[string]string{
 				"Hostname": yard.Hostname,
+				"Placeholder": yard.Placeholder,
 				"Port": strconv.Itoa(yard.Port),
 				"service": "nginx",
 				"conf_from": "grapes/nginx/nginx.conf.template",

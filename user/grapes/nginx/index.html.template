@@ -6,6 +6,6 @@
 </head>
 <body>
 	<h1>Hell'ou</h1>
-	<p>Dats node is <strong>{{.Hostname}}</strong></p>
+	<p>Dats node is <strong>{{.Placeholder}}</strong></p>
 </body>
 </html>

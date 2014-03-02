@@ -6,6 +6,7 @@ import (
 
 type Yard struct {
 	Hostname string
+	Placeholder string
 	Port     int
 	Runlist  []string
 }
