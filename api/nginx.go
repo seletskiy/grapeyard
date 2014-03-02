@@ -1,5 +1,9 @@
 package api
 
+import (
+	"log"
+)
+
 type Nginx struct{}
 
 func (n *Nginx) Ensure(cfg map[string]string) error {
