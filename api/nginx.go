@@ -2,7 +2,7 @@ package api
 
 type Nginx struct{}
 
-func (p *Nginx) Ensure(cfg map[string]string) error {
+func (n *Nginx) Ensure(cfg map[string]string) error {
 	p := new(Package)
 	c := new(Config)
 	
