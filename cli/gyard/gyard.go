@@ -21,7 +21,7 @@ func main() {
 	usage := `Grapeyard
 
 Usage:
-	gyard rape <version> <nodescache> [--extract-repo=<repooffset>] [--web-port=<webport>] [--gossip-port=<gossipport>]
+	gyard [options] rape <version> <nodescache>
 	gyard yard-test
 	gyard package-test
 	gyard conf-test
@@ -32,6 +32,7 @@ Options:
 	--web-port=<webport>         Port to get binary packages from node [default: 8081].
 	--gossip-port=<gossipport>   Port for communication between nodes using gossip protocol. [default: 2001].
 	--extract-repo=<repooffset>  Offset in binary where repo begins. If flag is not specified, no extract will be done. [default: 0].
+	-x                           Exit after raping.
 	-h --help                    Show this screen.
 	-v --version                 Show version.`
 
@@ -66,6 +67,10 @@ Options:
 		for {
 			for _, m := range net.GetMembers() {
 				fmt.Printf("[node] %s\n", m.Name)
+			}
+
+			if (args["-x"].(bool)) {
+				return
 			}
 
 			time.Sleep(5 * time.Second)
