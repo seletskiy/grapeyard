@@ -34,7 +34,9 @@ func Start(port int) *Handler {
 			getBinary(w, r, handler)
 		})
 
-	go http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	go func() {
+		panic(http.ListenAndServe(fmt.Sprintf(":%d", port), nil))
+	}()
 
 	return handler
 }

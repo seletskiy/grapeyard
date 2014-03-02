@@ -1,11 +1,14 @@
 package main
 
 import (
+	"os"
 	"fmt"
+	"time"
+	"strconv"
 	"github.com/docopt/docopt.go"
 
-	"lib/gossip"
-	"lib/httpapi"
+	"github.com/seletskiy/grapeyard/lib/gossip"
+	"github.com/seletskiy/grapeyard/lib/httpapi"
 )
 
 const (
@@ -32,34 +35,31 @@ Options:
 		fmt.Println("action: rape")
 		fmt.Println(args)
 
-		nodesCache, err := os.Open(args["nodescache"])
-		if err != nil {
-			panic("error opening state file for reading: " + err.Error())
-		}
+		fmt.Println("RUNNING v." + args["<version>"].(string))
 
-		nodesList := readNodesCache(args["nodescache"])
-		hostname, err := os.Hostname()
-		ver, _ := strconv.Atoi(args["version"])
-		gossipPort, _ := strconv.Atoi(args["gossipport"])
-		webPort, _ := strconv.Atoi(args["webport"])
+		nodesList := readNodesCache(args["<nodescache>"].(string))
+		hostname, _ := os.Hostname()
+		ver, _ := strconv.Atoi(args["<version>"].(string))
+		gossipPort, _ := strconv.Atoi(args["--gossip-port"].(string))
+		webPort, _ := strconv.Atoi(args["--web-port"].(string))
 
 		api := httpapi.Start(webPort)
 
 		api.UploadImage(ver, os.Args[0])
-		net.SendUpdateMsg(int64(ver), api.GetImageURI())
 
 		conf := gossip.Config{
 			RootNodes: nodesList,
 			LocalPort: gossipPort,
-			LocalVersion: ver,
-			Name: fmt.Sprintf("%s:%d", hostname, args["gossipport"]),
+			LocalVersion: int64(ver),
+			Name: fmt.Sprintf("%s:%d", hostname, gossipPort),
 		}
 
-		net := gossip.NewGossipNetwork(conf, &gossip.ImmediateExecutor{})
+		net := gossip.NewGossipNetwork(conf, &gossip.ImmediateExecutor{args})
+		net.SendUpdateMsg(int64(ver), api.GetImageURI())
 
 		for {
 			for _, m := range net.GetMembers() {
-				fmt.Printf("[node] %s:%d\n", m.Name, m.Addr, m.Port)
+				fmt.Printf("[node] %s\n", m.Name)
 			}
 
 			time.Sleep(5 * time.Second)
@@ -73,11 +73,15 @@ Options:
 }
 
 func readNodesCache(path string) []string {
+	file, err := os.Open(path)
+	if err != nil {
+		panic("can't open nodes list: " + err.Error())
+	}
 	nodesList := make([]string, 0)
 	for {
 		var line string
 
-		_, err := fmt.Fscanf(path, "%s\n", &line)
+		_, err := fmt.Fscanf(file, "%s\n", &line)
 		if err != nil {
 			break
 		}

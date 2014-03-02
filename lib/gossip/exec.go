@@ -1,6 +1,17 @@
 package gossip
 
-type ImmediateExecutor struct{}
+import (
+	"os"
+	"io"
+	"io/ioutil"
+	"log"
+	"fmt"
+	"syscall"
+)
+
+type ImmediateExecutor struct {
+	Args map[string]interface{}
+}
 
 func (ie *ImmediateExecutor) Run(binStream io.Reader, net *Network) {
 	// @FIXME
@@ -44,11 +55,28 @@ func (ie *ImmediateExecutor) Run(binStream io.Reader, net *Network) {
 		panic("error replacing old binary: " + err.Error())
 	}
 
-	panic(syscall.Exec(binPath,
+	log.Println(
 		[]string{
-			os.Args[0], os.Args[1], os.Args[2],
+			binPath,
+			"rape",
 			fmt.Sprintf("%d", net.GetVersion()),
 			stateFile.Name(),
+			fmt.Sprintf("--gossip-port=%s", ie.Args["--gossip-port"]),
+			fmt.Sprintf("--web-port=%s", ie.Args["--web-port"]),
+		})
+
+	err = syscall.Exec(binPath,
+		[]string{
+			binPath,
+			"rape",
+			fmt.Sprintf("%d", net.GetVersion()),
+			stateFile.Name(),
+			fmt.Sprintf("--gossip-port=%s", ie.Args["--gossip-port"]),
+			fmt.Sprintf("--web-port=%s", ie.Args["--web-port"]),
 		},
-		os.Environ()))
+		os.Environ())
+
+	log.Println("[EMERGENCY ALERT] while upgrading binary: " + err.Error())
+	log.Println("[EMERGENCY ALERT] binary was NOT upgraded!")
+	log.Println("[EMERGENCY ALERT] Р”Р°Р@ЅРЅР°СЏ СЃС‚СЂ@Р°РЅРёС†Р° РґРѕС")
 }
