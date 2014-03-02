@@ -12,7 +12,7 @@ func (p Config) Ensure(cfg map[string]string) error {
 }
 
 func configure(cfg map[string]string, tplPath string, confPath string) error {
-	tmpl, err := template.New("template.conf").ParseFiles(tplPath)
+	tmpl, err := template.New("template").ParseFiles(tplPath)
 	if err != nil {
 		return err
 	}
@@ -22,7 +22,7 @@ func configure(cfg map[string]string, tplPath string, confPath string) error {
 		return err
 	}
 
-	err = tmpl.Execute(f, cfg)
+	err = tmpl.ExecuteTemplate(f, "template", cfg)
 	if err != nil {
 		return err
 	}
