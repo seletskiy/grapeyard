@@ -73,7 +73,12 @@ func deployCurrentBranch() error {
     sourceBinary := filepath.Join(tempDir, "bin", filepath.Base(MAIN_EXE))
 
     // FIXME 222!!!! REMOVE IT !!!!
-    f, _ := os.Create(sourceBinary)
+    os.MkdirAll(filepath.Dir(sourceBinary), 0777)
+    f, err := os.Create(sourceBinary)
+    if err != nil {
+        return err
+    }
+
     f.Close()
     // REMOVE IT !!!
     stat, err := os.Stat(sourceBinary)
@@ -109,7 +114,18 @@ func deployCurrentBranch() error {
     // append tarred data
     tarWriter := tar.NewWriter(seedFile)
 
-    var dirs = []string{userDir}
+    var dirs = []string{}
+
+    tlFileInfos, err := ioutil.ReadDir(userDir)
+    if err != nil {
+        return err
+    }
+
+    for _, tlfinfo := range tlFileInfos {
+        if tlfinfo.IsDir() {
+            dirs = append(dirs, tlfinfo.Name())
+        }
+    }
 
     for {
         if len(dirs) == 0 {
@@ -140,7 +156,7 @@ func deployCurrentBranch() error {
                         return err
                     }
 
-                    sourceFile, err := os.Open(fullPath)
+                    sourceFile, err := os.Open(filepath.Join(userDir, fullPath))
                     if err != nil {
                         return err
                     }
