@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os/exec"
 
-    "github.com/seletskiy/grapefruit/yard"
+    "github.com/seletskiy/grapeyard/yard"
 )
 
 type Service string
