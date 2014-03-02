@@ -9,8 +9,6 @@ import (
 	"syscall"
 	"io"
 	"io/ioutil"
-	//"bufio"
-	//"strings"
 
 	"gossip"
 	"httpapi"
@@ -92,7 +90,6 @@ func main() {
 		if err != nil {
 			panic("error opening state file for reading: " + err.Error())
 		}
-		//reader := bufio.NewReader(stateFile)
 		for {
 			var line string
 			_, err := fmt.Fscanf(stateFile, "%s\n", &line)

@@ -2,11 +2,8 @@ package gossip
 
 import (
 	"encoding/json"
-	//"time"
 	"io"
 	"net/http"
-	//"os/exec"
-	//"syscall"
 	"bufio"
 	"log"
 	"fmt"
@@ -113,40 +110,6 @@ func (d *Network) AddBroadcast(buf []byte) {
 		msg: buf,
 	})
 }
-
-//type EventNetwork struct {
-	
-//}
-
-//func (e *EventNetwork) NotifyJoin(*memberlist.Node)() {
-
-//}
-
-//func (e *EventNetwork) NotifyJoin(*memberlist.Node)() {
-
-//}
-
-//func (e *EventNetwork) NotifyJoin(*memberlist.Node)() {
-
-//}
-
-//type Msg interface {
-//    GetVersion() int64
-//}
-
-//type VersionMsg struct {
-//    gen int64
-//}
-
-//func (i VersionMsg) GetVersion() int64 {
-//    return i.gen
-//}
-
-//func NewVersionMsg() *VersionMsg {
-//    return &VersionMsg{
-//        time.Now().UnixNano(),
-//    }
-//}
 
 type UpdateMsg struct {
 	Version int64 `json:"v"`
