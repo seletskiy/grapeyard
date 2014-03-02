@@ -13,13 +13,15 @@ func main() {
 	usage := `Grapeyard
 
 Usage:
-	gyard rape <version> <nodescache> [<rootnodes>]
+	gyard rape <version> <nodescache> [--web-port=<webport>] [--gossip-port=<gossipport>]
 	gyard -h | --help
 	gyard -v | --version
 
 Options:
-	-h --help     Show this screen.
-	-v --version  Show version.`
+	--web-port=<webport>         Port to get binary packages from node.
+	--gossip-port=<gossipport>   Port for communication between nodes using gossip protocol.
+	-h --help                    Show this screen.
+	-v --version                 Show version.`
 
 	args, _ := docopt.Parse(usage, nil, true, VERSION, false)
 
