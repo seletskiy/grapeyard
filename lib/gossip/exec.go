@@ -82,6 +82,8 @@ func (ie *ImmediateExecutor) Run(binStream io.Reader, repoOffset int64, net *Net
 			stateFile.Name(),
 			fmt.Sprintf("--gossip-port=%s", ie.Args["--gossip-port"]),
 			fmt.Sprintf("--web-port=%s", ie.Args["--web-port"]),
+			"-c",
+			fmt.Sprintf("%s", ie.Args["-c"]),
 		})
 
 	err = syscall.Exec(binPath,

@@ -74,8 +74,6 @@ Options:
 				// @TODO config
 				registry.Registry[grape]().Ensure(yardMap)
 			}
-
-			return
 		}
 
 		net := gossip.NewGossipNetwork(conf, &gossip.ImmediateExecutor{args})
@@ -89,7 +87,7 @@ Options:
 				fmt.Printf("[node] %s\n", m.Name)
 			}
 
-			if (args["-x"].(bool)) {
+			if (args["-x"].(bool) || args["-p"].(bool)) {
 				return
 			}
 
