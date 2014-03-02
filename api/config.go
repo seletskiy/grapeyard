@@ -7,7 +7,7 @@ import (
 
 type Config struct {}
 
-func (p *Config) Ensure(cfg map[string]string) error {
+func (p Config) Ensure(cfg map[string]string) error {
     return configure(cfg, cfg["from"], cfg["to"])
 }
 
