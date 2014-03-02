@@ -31,7 +31,7 @@ Usage:
 Options:
 	--web-port=<webport>         Port to get binary packages from node [default: 8081].
 	--gossip-port=<gossipport>   Port for communication between nodes using gossip protocol. [default: 2001].
-	--extract-repo=<repooffset>  Offset in binary where repo begins. If flag is not specified, no extract will be done. [default: 0].
+	--extract-repo=<repooffset>  Offset in binary where repo begins. If flag is not specified or zero, no extract will be done. [default: 0].
 	-c <yardpath>                Path to config of the yard [default: ./yard.toml].
 	-x                           Exit after raping.
 	-p                           Propagate only. Do not configure current node. Implies "-x".
