@@ -54,7 +54,7 @@ func WriteRegistry(registry map[string][]string, dir string, baseUrl string) err
     }
 
     // add base repo
-    var imports = []string{}
+    var imports = []string{filepath.Join(baseUrl, "iface")}
 
     for subpkg := range registry {
         imports = append(imports, filepath.Join(baseUrl, subpkg))
