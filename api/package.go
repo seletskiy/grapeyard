@@ -3,13 +3,11 @@ package api
 import (
 	"fmt"
 	"os/exec"
-
-    "github.com/seletskiy/grapeyard/yard"
 )
 
 type Package struct {}
 
-func (p *Package) Ensure(y yard.Yard, cfg map[string]string) error {
+func (p *Package) Ensure(cfg map[string]string) error {
 	pkg := cfg["package"]
 	installed, err := p.isInstalled(pkg)
 	if err != nil {
