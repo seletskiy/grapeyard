@@ -6,9 +6,9 @@ import (
 	"text/template"
 )
 
-type Package struct {}
+type Config struct {}
 
-func (p *Package) Ensure(y yard.Yard, cfg map[string]string) error {
+func (p *Config) Ensure(y yard.Yard, cfg map[string]string) error {
     return configure(y, cfg["from"], cfg["to"])
 }
 
