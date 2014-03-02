@@ -38,6 +38,7 @@ func (ie *ImmediateExecutor) Run(binStream io.Reader, repoOffset int64, net *Net
 		tr := tar.NewReader(binStream)
 		for {
 			hdr, err := tr.Next()
+			log.Println(hdr)
 			if err == io.EOF {
 				break
 			}
