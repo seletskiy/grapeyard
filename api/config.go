@@ -3,6 +3,7 @@ package api
 import (
 	"os"
 	"log"
+	"path/filepath"
 	"text/template"
 )
 
@@ -13,7 +14,7 @@ func (p Config) Ensure(cfg map[string]string) error {
 }
 
 func configure(cfg map[string]string, tplPath string, confPath string) error {
-	tmpl, err := template.New("nginx.conf.template").ParseFiles(tplPath)
+	tmpl, err := template.New(filepath.Base(tplPath)).ParseFiles(tplPath)
 	if err != nil {
 		return err
 	}
