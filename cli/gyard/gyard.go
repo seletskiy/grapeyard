@@ -13,7 +13,7 @@ func main() {
 	usage := `Grapeyard
 
 Usage:
-	gyard rape
+	gyard rape <version> <nodescache> [<rootnodes>]
 	gyard -h | --help
 	gyard -v | --version
 
@@ -25,6 +25,7 @@ Options:
 
 	if args["rape"].(bool) {
 		fmt.Println("action: rape")
+		fmt.Println(args)
 		return
 	}
 
