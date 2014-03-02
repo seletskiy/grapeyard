@@ -3,27 +3,28 @@ package api
 import (
 	"fmt"
 	"os/exec"
-	"syscall"
 )
 
 type Package string
 
-func (p Package) Ensure(map[string]string) error {
-	installed, err := p.isInstalled()
+func (p *Package) Ensure(cfg map[string]string) error {
+	pkg := cfg["package"]
+	installed, err := p.isInstalled(pkg)
 	if err != nil {
 		return err
 	}
 	if installed {
+		fmt.Println("already installed, nothing to do")
 		return nil
 	}
-	if err := p.install(); err != nil {
+	if err := p.install(pkg); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (p Package) install() error {
-	cmd := exec.Command("pacman", "--noconfirm", "-S", string(p))
+func (p *Package) install(pkg string) error {
+	cmd := exec.Command("pacman", "--noconfirm", "-S", pkg)
 	sobuf := make([]byte, 512)
 	sebuf := make([]byte, 512)
 
@@ -44,19 +45,19 @@ func (p Package) install() error {
 		stdout.Read(sobuf)
 		stderr.Read(sebuf)
 		// TODO log instead of print
-		fmt.Println("failed to install", p, "; error:", err)
+		fmt.Println("failed to install", pkg, "; error:", err)
 		fmt.Println("stdout", string(sobuf))
 		fmt.Println("stderr", string(sebuf))
 		return err
 	}
 
-	fmt.Println("waiting pacman to install", p)
+	fmt.Println("waiting pacman to install", pkg)
 
 	stdout.Read(sobuf)
 	stderr.Read(sebuf)
 	if err := cmd.Wait(); err != nil {
 		// TODO log instead of print
-		fmt.Println("failed to install", p, "; error:", err)
+		fmt.Println("failed to install", pkg, "; error:", err)
 		fmt.Println("stdout", string(sobuf))
 		fmt.Println("stderr", string(sebuf))
 		return err
@@ -66,9 +67,8 @@ func (p Package) install() error {
 }
 
 // FIXME finish the function implementation
-func (p Package) isInstalled() (bool, error) {
-	cmd := exec.Command(
-		"pacman", "-Qsq", string(p), "|", "grep", "^"+string(p)+"$")
+func (p *Package) isInstalled(pkg string) (bool, error) {
+	cmd := exec.Command("pacman", "-Qi", pkg)
 	sobuf := make([]byte, 512)
 	sebuf := make([]byte, 512)
 
@@ -89,32 +89,22 @@ func (p Package) isInstalled() (bool, error) {
 		stdout.Read(sobuf)
 		stderr.Read(sebuf)
 		// TODO log instead of print
-		fmt.Println("failed to install", p, "; error:", err)
+		fmt.Println("failed to install", pkg, "; error:", err)
 		fmt.Println("stdout", string(sobuf))
 		fmt.Println("stderr", string(sebuf))
 		return false, err
 	}
-
-	fmt.Println("waiting pacman to install", p)
 
 	stdout.Read(sobuf)
 	stderr.Read(sebuf)
 	if err := cmd.Wait(); err != nil {
 		// TODO log instead of print
-		fmt.Println("failed to install", p, "; error:", err)
 		fmt.Println("stdout", string(sobuf))
 		fmt.Println("stderr", string(sebuf))
 
-		if msg, ok := err.(*exec.ExitError); ok {
-			exitCode := msg.Sys().(syscall.WaitStatus).ExitStatus()
-			if exitCode == 1 {
-				fmt.Println("package", p, "already installed")
-				return false, nil
-			}
-		}
-
-		return false, err
+		fmt.Println("package", pkg, "not installed")
+		return false, nil
 	}
-
+	fmt.Println("package", pkg, "already installed")
 	return true, nil
 }

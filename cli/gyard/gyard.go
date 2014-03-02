@@ -1,15 +1,16 @@
 package main
 
 import (
-	"os"
 	"fmt"
-	"time"
-	"strconv"
 	"github.com/docopt/docopt.go"
+	"github.com/seletskiy/grapeyard/api"
+	"github.com/seletskiy/grapeyard/configurer"
 	"github.com/seletskiy/grapeyard/lib/gossip"
 	"github.com/seletskiy/grapeyard/lib/httpapi"
 	"github.com/seletskiy/grapeyard/yard"
-	"github.com/seletskiy/grapeyard/configurer"
+	"os"
+	"strconv"
+	"time"
 )
 
 const (
@@ -22,6 +23,7 @@ func main() {
 Usage:
 	gyard rape <version> <nodescache> [--extract-repo=<repooffset>] [--web-port=<webport>] [--gossip-port=<gossipport>]
 	gyard yard-test
+	gyard package-test
 	gyard conf-test
 	gyard -h | --help
 	gyard -v | --version
@@ -52,10 +54,10 @@ Options:
 		api.UploadImage(ver, os.Args[0])
 
 		conf := gossip.Config{
-			RootNodes: nodesList,
-			LocalPort: gossipPort,
+			RootNodes:    nodesList,
+			LocalPort:    gossipPort,
 			LocalVersion: int64(ver),
-			Name: fmt.Sprintf("%s:%d", hostname, gossipPort),
+			Name:         fmt.Sprintf("%s:%d", hostname, gossipPort),
 		}
 
 		net := gossip.NewGossipNetwork(conf, &gossip.ImmediateExecutor{args})
@@ -79,6 +81,16 @@ Options:
 			fmt.Println("err", err)
 		}
 		fmt.Println(y)
+		return
+	}
+
+	if args["package-test"].(bool) {
+		fmt.Println("action: package-test")
+		var p = new(api.Package)
+		err := p.Ensure(map[string]string{"package": "ntp"})
+		if err != nil {
+			fmt.Println("error:", err)
+		}
 		return
 	}
 
