@@ -63,6 +63,9 @@ func FindImplentations(i *types.Interface, pkg *types.Package) ([]string) {
         if typeName, ok := obj.(*types.TypeName); ok {
             if types.Implements(typeName.Type(), i) {
                 names = append(names, typeName.Name())
+            } else {
+                println(typeName.Name(), "cannot be an ensurer")
+                println(types.NewMethodSet(typeName.Type()).String())
             }
         }
     }
