@@ -6,9 +6,10 @@ import (
     "os"
 
     "github.com/mechmind/git-go/git"
-    "github.com/seletskiy/builder"
+    "github.com/seletskiy/grapeyard/builder"
 )
 
+const BASE_URL = "github.com/seletskiy/grapeyard"
 
 // functionality:
 // * detect commit in post-commit hook
@@ -42,13 +43,18 @@ func deployCurrentBranch() error {
         return err
     }
 
-    err = builder.ReadTree(repo, branch, *build_dir)
+    err = builder.ExtractTree(repo, branch, *build_dir)
     if err != nil {
         return err
     }
 
     // build binary
-    
+    registry, err := builder.MakeRegistry(*build_dir)
+    if err != nil {
+        return err
+    }
+
+    err = builder.WriteRegistry(registry, *build_dir, BASE_URL)
     // build tar
     // build seed
     return nil

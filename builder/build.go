@@ -117,6 +117,7 @@ func BuildExecutable(root string) error {
     // generate executable, including user-supplied code
 
     // make registry of all user extensions
-    user_root := filepath.Join(root, "user")
-    registry_root := filepath.Join(root, "registry")
+//    user_root := filepath.Join(root, "user")
+ //   registry_root := filepath.Join(root, "registry")
+ return nil
 }
