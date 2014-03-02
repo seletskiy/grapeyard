@@ -46,6 +46,7 @@ Options:
 
 		fmt.Println("RUNNING v." + args["<version>"].(string))
 
+        println("")
 		nodesList := readNodesCache(args["<nodescache>"].(string))
 		hostname, _ := os.Hostname()
 		ver, _ := strconv.Atoi(args["<version>"].(string))
@@ -54,7 +55,9 @@ Options:
 
 		api := httpapi.Start(webPort)
 
+        println("http api running")
 		api.UploadImage(ver, os.Args[0])
+        println("image uploeaded")
 
 		conf := gossip.Config{
 			RootNodes:    nodesList,
@@ -65,6 +68,8 @@ Options:
 
 		if !args["-p"].(bool) {
 			yard := getYard(args["-c"].(string))
+
+            println("got yard")
 			yardMap := map[string]string{
 				"Hostname": yard.Hostname,
 				"Port": strconv.Itoa(yard.Port),
@@ -72,6 +77,7 @@ Options:
 
 			for _, grape := range yard.Runlist {
 				// @TODO config
+                fmt.Println(registry.Registry)
 				registry.Registry[grape]().Ensure(yardMap)
 			}
 
@@ -79,10 +85,12 @@ Options:
 		}
 
 		net := gossip.NewGossipNetwork(conf, &gossip.ImmediateExecutor{args})
+        println("acquired gossip")
         // FIXME: handle error
         extr_repo, _ := strconv.Atoi(args["--extract-repo"].(string))
 		net.SendUpdateMsg(int64(ver), api.GetImageURI(),
             int64(extr_repo))
+        println("updated")
 
 		for {
 			for _, m := range net.GetMembers() {
