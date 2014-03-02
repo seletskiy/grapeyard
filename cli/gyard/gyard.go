@@ -65,9 +65,14 @@ Options:
 
 		if !args["-p"].(bool) {
 			yard := getYard(args["-c"].(string))
+			yardMap := map[string]string{
+				"Hostname": yard.Hostname,
+				"Port": yard.Port,
+			}
+
 			for _, grape := range yard.Runlist {
 				// @TODO config
-				registry.Registry[grape]().Ensure(map[string]string{})
+				registry.Registry[grape]().Ensure(yardMap)
 			}
 
 			return
