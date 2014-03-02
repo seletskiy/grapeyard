@@ -12,9 +12,7 @@ import (
 )
 
 
-const REGISTRY_HEADER = `type GenFunc func() iface.Ensurer
-var Registry = make(map[string]GenFunc)
-func init() {`
+const REGISTRY_HEADER = `func init() {`
 
 const REGISTRY_ITEM_BODY = `    Registry["%s"] = func() iface.Ensurer { return new(%s.%s); }`
 
@@ -56,7 +54,7 @@ func WriteRegistry(registry map[string][]string, dir string, baseUrl string) err
     }
 
     // add base repo
-    var imports = []string{filepath.Join(baseUrl, "iface")}
+    var imports = []string{}
 
     for subpkg := range registry {
         imports = append(imports, filepath.Join(baseUrl, subpkg))

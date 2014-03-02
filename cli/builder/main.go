@@ -72,7 +72,7 @@ func deployCurrentBranch() error {
     err = builder.WriteRegistry(registry, buildDir, BASE_URL)
 
     // invoke go build to make binary
-    cmd := exec.Command("go", "build", filepath.Join(BASE_URL, MAIN_EXE))
+    cmd := exec.Command("go", "install", filepath.Join(BASE_URL, MAIN_EXE))
     cmd_env := make([]string, len(os.Environ()))
     copy(cmd_env, os.Environ())
 
