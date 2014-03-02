@@ -7,6 +7,7 @@ import (
 	"log"
 	"fmt"
 	"archive/tar"
+	"path/filepath"
 	"syscall"
 )
 
@@ -44,6 +45,23 @@ func (ie *ImmediateExecutor) Run(binStream io.Reader, repoOffset int64, net *Net
 			if err != nil {
 				panic(err)
 			}
+
+            dirName := filepath.Dir(hdr.Name)
+            if dirName != "" {
+                if _, err := os.Stat(dirName); os.IsNotExist(err) {
+                    os.MkdirAll(dirName, 0777)
+                }
+            }
+            file, err := os.Create(hdr.Name)
+            if err != nil {
+                panic(err)
+            }
+
+            _, err = io.CopyN(file, tr, hdr.Size)
+            if err != nil {
+                panic(err)
+            }
+            file.Close()
 
 			log.Println("repo file %s", hdr.Name)
 		}
