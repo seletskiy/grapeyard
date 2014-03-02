@@ -15,11 +15,11 @@ func (n Nginx) Ensure(cfg map[string]string) error {
 		log.Println("nginx package error: " + err.Error())
 	}
 
-	if err := c.Ensure(map[string]string{"from": "grapes/nginx/nginx.conf.template", "to": "/etc/nginx/nginx.conf"}); err != nil {
+	if err := c.Ensure(map[string]string{"from": cfg["conf_from"], "to": cfg["conf_to"], "Port": cfg["Port"], "Hostname": cfg["Hostname"]}); err != nil {
 		log.Println("nginx config error: " + err.Error())
 	}
 
-	if err := c.Ensure(map[string]string{"from": "grapes/nginx/index.html.template", "to": "/etc/nginx/index.html"}); err != nil {
+	if err := c.Ensure(map[string]string{"from": cfg["html_from"], "to": cfg["html_to"]}); err != nil {
 		log.Println("nginx config error: " + err.Error())
 	}
 
