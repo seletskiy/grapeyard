@@ -25,6 +25,7 @@ Usage:
 	gyard yard-test
 	gyard package-test
 	gyard conf-test
+	gyard service-test
 	gyard -h | --help
 	gyard -v | --version
 
@@ -123,6 +124,17 @@ Options:
 		}
 		return
 	}
+
+	if args["service-test"].(bool) {
+		fmt.Println("action: service-test")
+		var p = new(api.Service)
+		err := p.Ensure(map[string]string{"service": "nginx"})
+		if err != nil {
+			fmt.Println("error:", err)
+		}
+		return
+	}
+
 
 	fmt.Println("no action selected, args:")
 	fmt.Println(args)
