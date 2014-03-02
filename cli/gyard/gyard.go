@@ -32,7 +32,9 @@ Options:
 	--web-port=<webport>         Port to get binary packages from node [default: 8081].
 	--gossip-port=<gossipport>   Port for communication between nodes using gossip protocol. [default: 2001].
 	--extract-repo=<repooffset>  Offset in binary where repo begins. If flag is not specified, no extract will be done. [default: 0].
+	-c <yardpath>                Path to config of the yard [default: ./yard.toml].
 	-x                           Exit after raping.
+	-p                           Propagate only. Do not configure current node. Implies "-x".
 	-h --help                    Show this screen.
 	-v --version                 Show version.`
 
@@ -59,6 +61,16 @@ Options:
 			LocalPort:    gossipPort,
 			LocalVersion: int64(ver),
 			Name:         fmt.Sprintf("%s:%d", hostname, gossipPort),
+		}
+
+		if !args["-p"].(bool) {
+			yard := getYard(args["-c"].(string))
+			for _, grape := range yard.Runlist {
+				// @TODO
+				panic("apply grape here! " + grape)
+			}
+
+			return
 		}
 
 		net := gossip.NewGossipNetwork(conf, &gossip.ImmediateExecutor{args})
