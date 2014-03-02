@@ -3,13 +3,11 @@ package api
 import (
 	"fmt"
 	"os/exec"
-
-    "github.com/seletskiy/grapeyard/yard"
 )
 
 type Service string
 
-func (p *Service) Ensure(y yard.Yard, cfg map[string]string) error {
+func (p *Service) Ensure(fg map[string]string) error {
 	service := cfg["service"]
 	cmd := exec.Command("systemctl", "restart", service)
 	sobuf := make([]byte, 512)
