@@ -7,8 +7,10 @@ import (
     "io"
     "io/ioutil"
     "os"
+    "os/exec"
     "path/filepath"
     "strconv"
+    "strings"
 
     "github.com/mechmind/git-go/git"
     "github.com/seletskiy/grapeyard/builder"
@@ -68,19 +70,43 @@ func deployCurrentBranch() error {
     }
 
     err = builder.WriteRegistry(registry, buildDir, BASE_URL)
-    // FIXME: build executable
 
-    sourceBinary := filepath.Join(tempDir, "bin", filepath.Base(MAIN_EXE))
+    // invoke go build to make binary
+    cmd := exec.Command("go", "build", filepath.Join(BASE_URL, MAIN_EXE))
+    cmd_env := make([]string, len(os.Environ()))
+    copy(cmd_env, os.Environ())
 
-    // FIXME 222!!!! REMOVE IT !!!!
-    os.MkdirAll(filepath.Dir(sourceBinary), 0777)
-    f, err := os.Create(sourceBinary)
+    // find GOPATH and replace
+    var gopath_found bool
+
+    for idx, vr := range cmd_env {
+        if strings.HasPrefix(vr, "GOPATH=") {
+            cmd_env[idx] = "GOPATH=" + tempDir + ":" + vr[7:]
+            gopath_found = true
+            break
+        }
+    }
+    if ! gopath_found {
+        cmd_env = append(cmd_env, "GOPATH=" + tempDir)
+    }
+
+    cmd.Env = cmd_env
+
+    cmd.Stderr = os.Stderr
+    cmd.Stdout = os.Stdout
+
+    err = cmd.Start()
     if err != nil {
         return err
     }
 
-    f.Close()
-    // REMOVE IT !!!
+    err = cmd.Wait()
+    if err != nil {
+        return err
+    }
+
+    sourceBinary := filepath.Join(tempDir, "bin", filepath.Base(MAIN_EXE))
+
     stat, err := os.Stat(sourceBinary)
     if err != nil {
         return err

@@ -69,7 +69,7 @@ Options:
 			yard := getYard(args["-c"].(string))
 			for _, grape := range yard.Runlist {
 				// @TODO config
-				registry.Registry[grape]()(yard, map[string]string{})
+				registry.Registry[grape]().Ensure(yard, map[string]string{})
 			}
 
 			return
