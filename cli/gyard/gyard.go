@@ -103,40 +103,6 @@ Options:
 		return
 	}
 
-	if args["package-test"].(bool) {
-		fmt.Println("action: package-test")
-		var p = new(api.Package)
-		err := p.Ensure(map[string]string{"package": "ntp"})
-		if err != nil {
-			fmt.Println("error:", err)
-		}
-		return
-	}
-
-	if args["conf-test"].(bool) {
-		fmt.Println("action: conf-test")
-		yard := yard.Yard{"localhost", 80, []string{"nginx", "ntp"}}
-		err := configurer.Configure(
-			yard,
-			"test/configurer/template.conf",
-			"test/configurer/result.conf")
-		if err != nil {
-			fmt.Println("err", err)
-		}
-		return
-	}
-
-	if args["service-test"].(bool) {
-		fmt.Println("action: service-test")
-		var p = new(api.Service)
-		err := p.Ensure(map[string]string{"service": "nginx"})
-		if err != nil {
-			fmt.Println("error:", err)
-		}
-		return
-	}
-
-
 	fmt.Println("no action selected, args:")
 	fmt.Println(args)
 
