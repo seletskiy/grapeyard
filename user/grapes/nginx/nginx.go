@@ -1,7 +1,7 @@
 package nginx
 
 import (
-	"github.com/seletskiy/api"
+	"github.com/seletskiy/grapeyard/api"
 )
 
 func (p *Config) Ensure(cfg map[string]string) error {
