@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/docopt/docopt.go"
-	"github.com/seletskiy/grapeyard/api"
-	"github.com/seletskiy/grapeyard/configurer"
 	"github.com/seletskiy/grapeyard/lib/gossip"
 	"github.com/seletskiy/grapeyard/lib/httpapi"
 	"github.com/seletskiy/grapeyard/yard"
