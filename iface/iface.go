@@ -1,4 +1,4 @@
-package grapeyard
+package iface
 
 
 type Ensurer interface {
