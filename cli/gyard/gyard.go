@@ -6,9 +6,10 @@ import (
 	"time"
 	"strconv"
 	"github.com/docopt/docopt.go"
-
 	"github.com/seletskiy/grapeyard/lib/gossip"
 	"github.com/seletskiy/grapeyard/lib/httpapi"
+	"github.com/seletskiy/grapeyard/yard"
+	"github.com/seletskiy/grapeyard/configurer"
 )
 
 const (
@@ -20,6 +21,8 @@ func main() {
 
 Usage:
 	gyard rape <version> <nodescache> [--web-port=<webport>] [--gossip-port=<gossipport>]
+	gyard yard-test
+	gyard conf-test
 	gyard -h | --help
 	gyard -v | --version
 
@@ -64,6 +67,31 @@ Options:
 
 			time.Sleep(5 * time.Second)
 		}
+	}
+
+	if args["yard-test"].(bool) {
+		fmt.Println("action: yard-test")
+		var y yard.Yard
+		err := yard.GetYard(&y,
+			"test/yard/yard.toml")
+		if err != nil {
+			fmt.Println("err", err)
+		}
+		fmt.Println(y)
+		return
+	}
+
+	if args["conf-test"].(bool) {
+		fmt.Println("action: conf-test")
+		yard := yard.Yard{"localhost", 80}
+		err := configurer.Configure(
+			yard,
+			"test/configurer/template.conf",
+			"test/configurer/result.conf")
+		if err != nil {
+			fmt.Println("err", err)
+		}
+		return
 	}
 
 	fmt.Println("no action selected, args:")

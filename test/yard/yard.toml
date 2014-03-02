@@ -1,0 +1,4 @@
+# This is a TOML document. Boom.
+
+Hostname = "localhost"
+Port = 80
