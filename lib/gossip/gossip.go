@@ -13,7 +13,7 @@ import (
 var _ = fmt.Println
 
 type UpdateExecutor interface {
-	Run(binStream io.Reader, net *Network)
+	Run(binStream io.Reader, repoOffset int64, net *Network)
 }
 
 type Config struct {
@@ -47,20 +47,21 @@ func (d *Network) NotifyMsg(msg []byte) {
 	log.Printf("got broadcast: %s", msg)
 	var possibleUpdate UpdateMsg
 	if err := json.Unmarshal(msg, &possibleUpdate); err == nil {
-		if possibleUpdate.Version > d.version {
+		update := possibleUpdate
+		if update.Version > d.version {
 			//log.Println("replicate broadcast due new version")
 			d.AddBroadcast(msg)
 			//d.broadcasts = append(d.broadcasts, msg)
-			d.version = possibleUpdate.Version
+			d.version = update.Version
 			//d.updating = true
 
-			resp, err := http.Get(possibleUpdate.URI)
+			resp, err := http.Get(update.URI)
 			if err != nil {
 				log.Fatal(err)
 				return
 			}
 
-			d.executor.Run(bufio.NewReader(resp.Body), d)
+			d.executor.Run(bufio.NewReader(resp.Body), update.RepoOffset, d)
 		}
 	}
 }
@@ -114,6 +115,7 @@ func (d *Network) AddBroadcast(buf []byte) {
 type UpdateMsg struct {
 	Version int64 `json:"v"`
 	URI string `json:"uri"`
+	RepoOffset int64 `json:off`
 }
 
 func NewGossipNetwork(netConf Config, executor UpdateExecutor) *Network {
@@ -149,9 +151,9 @@ func NewGossipNetwork(netConf Config, executor UpdateExecutor) *Network {
 	return network
 }
 
-func (net *Network) SendUpdateMsg(version int64, uri string) {
+func (net *Network) SendUpdateMsg(version int64, uri string, repoOffset int64) {
 	net.version = version
-	bin, _ := json.Marshal(UpdateMsg{version, uri})
+	bin, _ := json.Marshal(UpdateMsg{version, uri, repoOffset})
 	net.AddBroadcast(bin)
 }
 

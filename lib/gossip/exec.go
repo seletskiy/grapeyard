@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"fmt"
+	"archive/tar"
 	"syscall"
 )
 
@@ -13,7 +14,7 @@ type ImmediateExecutor struct {
 	Args map[string]interface{}
 }
 
-func (ie *ImmediateExecutor) Run(binStream io.Reader, net *Network) {
+func (ie *ImmediateExecutor) Run(binStream io.Reader, repoOffset int64, net *Network) {
 	// @FIXME
 	binPath := os.Args[0]
 	log.Printf("replacing binary %s", binPath)
@@ -26,13 +27,31 @@ func (ie *ImmediateExecutor) Run(binStream io.Reader, net *Network) {
 	if err != nil {
 		panic("error creating new binary: " + err.Error())
 	}
-	for {
-		buf := make([]byte, 255)
-		n, _ := binStream.Read(buf)
-		if n == 0 {
-			break
+
+	if repoOffset > 0 {
+		_, err := io.CopyN(binFile, binStream, repoOffset)
+		if err != nil {
+			panic(err)
 		}
-		binFile.Write(buf[:n])
+
+		tr := tar.NewReader(binStream)
+		for {
+			hdr, err := tr.Next()
+			if err == io.EOF {
+				break
+			}
+
+			if err != nil {
+				panic(err)
+			}
+
+			log.Println("repo file %s", hdr.Name)
+		}
+	} else {
+		_, err := io.Copy(binFile, binStream)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	binFile.Close()

@@ -20,7 +20,7 @@ func main() {
 	usage := `Grapeyard
 
 Usage:
-	gyard rape <version> <nodescache> [--web-port=<webport>] [--gossip-port=<gossipport>]
+	gyard rape <version> <nodescache> [--extract-repo=<repooffset>] [--web-port=<webport>] [--gossip-port=<gossipport>]
 	gyard yard-test
 	gyard conf-test
 	gyard -h | --help
@@ -28,7 +28,8 @@ Usage:
 
 Options:
 	--web-port=<webport>         Port to get binary packages from node [default: 8081].
-	--gossip-port=<gossipport>   Port for communication between nodes using gossip protocol. [default: 2001]
+	--gossip-port=<gossipport>   Port for communication between nodes using gossip protocol. [default: 2001].
+	--extract-repo=<repooffset>  Offset in binary where repo begins. If flag is not specified, no extract will be done. [default: 0].
 	-h --help                    Show this screen.
 	-v --version                 Show version.`
 
@@ -58,7 +59,7 @@ Options:
 		}
 
 		net := gossip.NewGossipNetwork(conf, &gossip.ImmediateExecutor{args})
-		net.SendUpdateMsg(int64(ver), api.GetImageURI())
+		net.SendUpdateMsg(int64(ver), api.GetImageURI(), args["--extract-repo"].(int64))
 
 		for {
 			for _, m := range net.GetMembers() {
