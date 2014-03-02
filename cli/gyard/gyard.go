@@ -67,7 +67,7 @@ Options:
 			yard := getYard(args["-c"].(string))
 			yardMap := map[string]string{
 				"Hostname": yard.Hostname,
-				"Port": yard.Port,
+				"Port": strconv.Itoa(yard.Port),
 			}
 
 			for _, grape := range yard.Runlist {
@@ -79,7 +79,10 @@ Options:
 		}
 
 		net := gossip.NewGossipNetwork(conf, &gossip.ImmediateExecutor{args})
-		net.SendUpdateMsg(int64(ver), api.GetImageURI(), args["--extract-repo"].(int64))
+        // FIXME: handle error
+        extr_repo, _ := strconv.Atoi(args["--extract-repo"].(string))
+		net.SendUpdateMsg(int64(ver), api.GetImageURI(),
+            int64(extr_repo))
 
 		for {
 			for _, m := range net.GetMembers() {
