@@ -127,6 +127,7 @@ func deployCurrentBranch() error {
     }
 
     io.Copy(seedFile, sourceFile)
+    defer seedFile.Close()
 
     // build tar
     // strip go sources from user/ dir
@@ -139,6 +140,7 @@ func deployCurrentBranch() error {
 
     // append tarred data
     tarWriter := tar.NewWriter(seedFile)
+    defer tarWriter.Close()
 
     var dirs = []string{}
 
@@ -176,6 +178,7 @@ func deployCurrentBranch() error {
                     }
 
                     tarHeader.Name = filepath.Join(dir, tarHeader.Name)
+                    println(tarHeader.Name)
 
                     err = tarWriter.WriteHeader(tarHeader)
                     if err != nil {
