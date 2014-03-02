@@ -5,18 +5,20 @@ import (
     "io/ioutil"
     "os"
     "path/filepath"
+    "strings"
 
     "code.google.com/p/go.tools/go/types"
     _ "code.google.com/p/go.tools/go/gcimporter"
 )
 
 
-const REGISTRY_HEADER = `type GenFunc func() Ensurer
-var Registry = make(map[string]iface.Ensurer)`
+const REGISTRY_HEADER = `type GenFunc func() iface.Ensurer
+var Registry = make(map[string]GenFunc)
+func init() {`
 
-const REGISTRY_ITEM_BODY = `Registry["%s"] = func() Ensurer { return new(%s); }`
+const REGISTRY_ITEM_BODY = `    Registry["%s"] = func() iface.Ensurer { return new(%s.%s); }`
 
-const REGISTRY_FOOTER = ``
+const REGISTRY_FOOTER = `}`
 
 func MakeRegistry(root string) (map[string][]string, error) {
     registry := make(map[string][]string)
@@ -28,12 +30,12 @@ func MakeRegistry(root string) (map[string][]string, error) {
     ensurer := ifacePkg.Scope().Lookup("Ensurer").Type().Underlying().(*types.Interface)
 
     // add stdlib api
-    err = traverseDir(registry, filepath.Join(root, "api"), ensurer)
+    err = traverseDir(registry, "api", root, ensurer)
     if err != nil {
         return nil, err
     }
 
-    err = traverseDir(registry, filepath.Join(root, "user"), ensurer)
+    err = traverseDir(registry, "user", root, ensurer)
     if err != nil {
         return nil, err
     }
@@ -54,7 +56,7 @@ func WriteRegistry(registry map[string][]string, dir string, baseUrl string) err
     }
 
     // add base repo
-    var imports = []string{filepath.Join(dir, "iface")}
+    var imports = []string{filepath.Join(baseUrl, "iface")}
 
     for subpkg := range registry {
         imports = append(imports, filepath.Join(baseUrl, subpkg))
@@ -78,7 +80,8 @@ func WriteRegistry(registry map[string][]string, dir string, baseUrl string) err
 
     for subpkg, names := range registry {
         for _, name := range names {
-            fmt.Fprintf(regFile, REGISTRY_ITEM_BODY, subpkg + "." + name, name)
+            fmt.Fprintf(regFile, REGISTRY_ITEM_BODY, subpkg + "." + name, filepath.Base(subpkg),
+                name)
             regFile.WriteString("\n")
         }
         regFile.WriteString("\n")
@@ -91,28 +94,34 @@ func WriteRegistry(registry map[string][]string, dir string, baseUrl string) err
 }
 
 
-func traverseDir(registry map[string][]string, dir string, ensurer *types.Interface) error {
-    pkg, err := LoadPackage(dir)
+func traverseDir(registry map[string][]string, dir, base string, ensurer *types.Interface) error {
+    fullPath := filepath.Join(base, dir)
+    fileInfos, err := ioutil.ReadDir(fullPath)
     if err != nil {
         return err
     }
 
-    names := FindImplentations(ensurer, pkg)
+    for _, file := range fileInfos {
+        if ! file.IsDir() && strings.HasSuffix(file.Name(), ".go") {
+            pkg, err := LoadPackage(fullPath)
+            if err != nil {
+                return err
+            }
 
-    // add type names into registry
-    if len(names) != 0 {
-        registry[dir] = names
-    }
+            names := FindImplentations(ensurer, pkg)
 
-    fileInfos, err := ioutil.ReadDir(dir)
-    if err != nil {
-        return err
+            // add type names into registry
+            if len(names) != 0 {
+                registry[dir] = names
+            }
+            break
+        }
     }
 
     for _, fileInfo := range fileInfos {
         if fileInfo.IsDir() {
             // recur
-            err = traverseDir(registry, filepath.Join(dir, fileInfo.Name()), ensurer)
+            err = traverseDir(registry, filepath.Join(dir, fileInfo.Name()), base, ensurer)
             if err != nil {
                 return err
             }

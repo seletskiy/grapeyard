@@ -3,7 +3,9 @@ package main
 import (
     "flag"
     "fmt"
+    "io/ioutil"
     "os"
+    "path/filepath"
 
     "github.com/mechmind/git-go/git"
     "github.com/seletskiy/grapeyard/builder"
@@ -43,19 +45,37 @@ func deployCurrentBranch() error {
         return err
     }
 
-    err = builder.ExtractTree(repo, branch, *build_dir)
+    tempDir, err := ioutil.TempDir("/tmp", "grape-build.")
+    if err != nil {
+        return err
+    }
+
+    buildDir := filepath.Join(tempDir, "src", BASE_URL)
+
+    err = builder.ExtractTree(repo, branch, buildDir)
     if err != nil {
         return err
     }
 
     // build binary
-    registry, err := builder.MakeRegistry(*build_dir)
+    registry, err := builder.MakeRegistry(buildDir)
     if err != nil {
         return err
     }
 
-    err = builder.WriteRegistry(registry, *build_dir, BASE_URL)
+    err = builder.WriteRegistry(registry, buildDir, BASE_URL)
+    // TODO: build executable
+
+
     // build tar
+    // strip go sources from user/ dir
+
+    userDir := filepath.Join(buildDir, "user")
+    err = builder.StripSources(userDir)
+    if err != nil {
+        return err
+    }
+
     // build seed
     return nil
 }
