@@ -24,6 +24,7 @@ func configure(cfg map[string]string, tplPath string, confPath string) error {
 
 	err = tmpl.Execute(f, cfg)
 	if err != nil {
+		log.Println("error:", err)
 		return err
 	}
 
