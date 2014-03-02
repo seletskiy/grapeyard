@@ -19,6 +19,8 @@ import (
 const BASE_URL = "github.com/seletskiy/grapeyard"
 const MAIN_EXE = "cli/gyard"
 
+const RELEASE_DIR = "/tmp/grapeyard"
+
 // functionality:
 // * detect commit in post-commit hook
 // * read tree from commit
@@ -120,6 +122,7 @@ func deployCurrentBranch() error {
     if err != nil {
         return err
     }
+    os.Chmod(seedPath, 0755)
 
     sourceFile, err := os.Open(sourceBinary)
     if err != nil {
@@ -199,6 +202,12 @@ func deployCurrentBranch() error {
         dirs = newDirs
     }
 
+    // move to RELEASE_DIR
+    if _, err := os.Stat(RELEASE_DIR); os.IsNotExist(err) {
+        os.Mkdir(RELEASE_DIR, 0777)
+    }
+
+    os.Rename(seedPath, filepath.Join(RELEASE_DIR, seedName))
     return nil
 }
 
