@@ -2,4 +2,4 @@
 
 Hostname = "localhost"
 Port = 80
-Runlist = [ "nginx", "ntp" ]
+Runlist = []
