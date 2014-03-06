@@ -5,13 +5,13 @@ import (
 	"text/template"
 )
 
-type Config struct {}
+type Config struct{}
 
 func (p *Config) Ensure(cfg map[string]string) error {
-    return configure(cfg, cfg["from"], cfg["to"])
+	return configure(cfg, cfg["from"], cfg["to"])
 }
 
-func configure(cfg, tplPath string, confPath string) error {
+func configure(cfg map[string]string, tplPath string, confPath string) error {
 	tmpl, err := template.New("template.conf").ParseFiles(tplPath)
 	if err != nil {
 		return err
@@ -31,4 +31,3 @@ func configure(cfg, tplPath string, confPath string) error {
 
 	return nil
 }
-
