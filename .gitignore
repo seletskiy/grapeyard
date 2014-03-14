@@ -23,4 +23,5 @@ _testmain.go
 
 # client binary
 /cli/gyard/gyard
-cli/builder/builder
+/gyard
+/gyard.seed
